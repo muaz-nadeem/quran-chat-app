@@ -97,10 +97,10 @@ export default function AuthScreen() {
       >
         <View className="flex-1 px-8 justify-center">
           <Animated.View entering={FadeInUp.duration(600).delay(100)}>
-            <Text className="text-3xl font-bold text-text-primary mb-3">
+            <Text className="text-3xl font-bold text-text-on-green mb-3">
               {isSignIn ? "Welcome back 🌙" : "Create your account"}
             </Text>
-            <Text className="text-base text-text-secondary mb-10 leading-6">
+            <Text className="text-base text-text-on-green-muted mb-10 leading-6">
               {isSignIn
                 ? "Sign in to pick up where you left off."
                 : "Your conversations will be saved and available every time you return."}
@@ -117,7 +117,7 @@ export default function AuthScreen() {
               autoComplete="email"
               keyboardType="email-address"
               className="bg-surface text-text-primary text-base rounded-2xl px-6 py-5 mb-3 border border-surface-light"
-              selectionColor="#10B981"
+              selectionColor="#74C69D"
             />
             <View className="flex-row items-center bg-surface rounded-2xl border border-surface-light mb-2">
               <TextInput
@@ -128,7 +128,7 @@ export default function AuthScreen() {
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
                 className="flex-1 text-text-primary text-base px-6 py-5"
-                selectionColor="#10B981"
+                selectionColor="#74C69D"
               />
               <Pressable
                 onPress={() => setShowPassword(!showPassword)}
@@ -165,7 +165,7 @@ export default function AuthScreen() {
               onPress={handleSubmit}
               disabled={!canSubmit || isLoading}
               className={`rounded-2xl py-4 items-center mt-2 ${
-                canSubmit ? "bg-emerald active:opacity-80" : "bg-surface-light"
+                canSubmit ? "bg-deep-green active:opacity-80" : "bg-surface-light"
               }`}
             >
               {isLoading ? (
@@ -189,16 +189,16 @@ export default function AuthScreen() {
               }}
               className="items-center mt-6 active:opacity-70"
             >
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-text-on-green-muted text-sm">
                 {isSignIn ? (
                   <>
                     Don't have an account?{" "}
-                    <Text className="text-emerald font-semibold">Sign Up</Text>
+                    <Text className="text-gold font-semibold">Sign Up</Text>
                   </>
                 ) : (
                   <>
                     Already have an account?{" "}
-                    <Text className="text-emerald font-semibold">Sign In</Text>
+                    <Text className="text-gold font-semibold">Sign In</Text>
                   </>
                 )}
               </Text>

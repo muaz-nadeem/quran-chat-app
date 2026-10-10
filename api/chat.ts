@@ -33,23 +33,28 @@ function getUserIdFromJwt(authHeader: string | null): string {
   }
 }
 
-const SYSTEM_PROMPT = `You are a knowledgeable and compassionate Islamic scholar assistant. Your purpose is to help Muslims understand the Quran better.
+const SYSTEM_PROMPT = `You are a knowledgeable and compassionate Islamic scholar assistant. Your purpose is to help Muslims understand Islam through the Quran and authentic Hadith.
 
 GUIDELINES:
-1. Always cite specific Quran verses using the format [QV:surah:ayah] (e.g., [QV:2:255] for Ayat al-Kursi). Never skip references.
-2. BE BRIEF. Give the crux of the answer in simple words, not an essay. Aim for 2-4 short sentences of explanation plus 1-3 verse references. Hard limit: ~120 words of prose.
-3. Answer the question directly in the first sentence, then support it with the verse reference(s).
-4. Stay grounded in authentic Quranic text and well-established tafsir (exegesis).
-5. Never make up or fabricate verses. If unsure, say so honestly.
-6. Use simple, accessible language that anyone can understand.
-7. If a question is outside the scope of the Quran, gently redirect in one sentence to what the Quran says about related topics.
-8. Only mention hadith if essential, and only from well-authenticated collections (Bukhari, Muslim), clearly distinguished from Quranic verses.
+1. Always cite Quran verses using [QV:surah:ayah] (e.g., [QV:2:255] for Ayat al-Kursi).
+2. Cite authentic hadith using [HV:collection:number] (e.g., [HV:bukhari:1], [HV:muslim:1]). Collections: bukhari, muslim, abudawud, tirmidhi, nasai, ibnmajah.
+3. Structure every answer clearly:
+   - Start with a direct, simple answer (1-2 sentences).
+   - Then explain the context and meaning in accessible language.
+   - Support with Quran references [QV:...] and relevant Hadith [HV:...].
+   - End with a brief practical takeaway the user can apply today.
+4. Be comprehensive but readable — aim for 150-250 words of prose plus references.
+5. Stay grounded in authentic Quranic text, well-established tafsir, and sahih hadith collections.
+6. Never fabricate verses or hadith. If unsure, say so honestly.
+7. Use simple language anyone can understand. Avoid jargon unless you explain it.
+8. Clearly distinguish Quran verses from Hadith in your prose.
 
 FORMAT:
-- Use [QV:surah:ayah] markers for every Quran verse you reference
-- Short paragraphs, no headings, no bullet lists unless the user asks for a list
-- Do not repeat the question back; do not add long introductions or conclusions
-- A single short encouraging phrase at the end is fine, but keep it to a few words`;
+- Use [QV:surah:ayah] for every Quran verse referenced
+- Use [HV:collection:number] for every hadith referenced
+- Short paragraphs; use line breaks between sections
+- Do not repeat the question; no long introductions`;
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -78,7 +83,7 @@ export default async function handler(req: Request): Promise<Response> {
       );
     }
 
-    const { messages } = await req.json();
+    const { messages, userContext } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -87,8 +92,20 @@ export default async function handler(req: Request): Promise<Response> {
       });
     }
 
+    let systemPrompt = SYSTEM_PROMPT;
+    if (userContext) {
+      const parts: string[] = [];
+      if (userContext.goal) parts.push(`User's spiritual goal: ${userContext.goal}`);
+      if (userContext.interests?.length) {
+        parts.push(`User's interests: ${userContext.interests.join(", ")}`);
+      }
+      if (parts.length) {
+        systemPrompt += `\n\nUSER CONTEXT:\n${parts.join("\n")}\nTailor examples and emphasis to their interests when relevant.`;
+      }
+    }
+
     const openaiMessages = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
       ...messages.map((m: { role: string; content: string }) => ({
         role: m.role,
         content: m.content,
@@ -108,7 +125,7 @@ export default async function handler(req: Request): Promise<Response> {
           messages: openaiMessages,
           stream: true,
           temperature: 0.7,
-          max_tokens: 600,
+          max_tokens: 900,
         }),
       }
     );

@@ -17,12 +17,18 @@ export default function NameScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <View className="flex-1 px-8 justify-center">
+        <View className="flex-1 px-7 justify-center">
           <Animated.View entering={FadeInUp.duration(600).delay(200)}>
-            <Text className="text-3xl font-bold text-text-primary mb-3">
-              Assalamu Alaikum! 👋
+            <Text className="text-text-on-green-muted text-xs font-semibold tracking-wider uppercase mb-4">
+              Let's get to know you
             </Text>
-            <Text className="text-lg text-text-secondary mb-10 leading-7">
+            <Text
+              className="text-[28px] text-text-on-green tracking-tight mb-3"
+              style={{ fontFamily: "LibreBaskerville_700Bold" }}
+            >
+              Assalamu Alaikum
+            </Text>
+            <Text className="text-base text-text-on-green-muted mb-10 leading-6">
               What should we call you?
             </Text>
           </Animated.View>
@@ -32,12 +38,12 @@ export default function NameScreen() {
               value={displayName}
               onChangeText={setDisplayName}
               placeholder="Enter your name"
-              placeholderTextColor="#98A29A"
+              placeholderTextColor="#9CA39A"
               autoFocus
-              className="bg-surface text-text-primary text-lg rounded-2xl px-6 py-5 mb-4 border border-surface-light"
-              selectionColor="#10B981"
+              className="bg-surface text-text-primary text-lg rounded-2xl px-5 py-4 mb-3 border border-surface-light"
+              selectionColor="#74C69D"
             />
-            <Text className="text-text-secondary text-sm ml-2">
+            <Text className="text-text-on-green-muted text-sm ml-1">
               This helps us personalize your experience
             </Text>
           </Animated.View>
@@ -45,21 +51,19 @@ export default function NameScreen() {
 
         <Animated.View
           entering={FadeInDown.duration(600).delay(600)}
-          className="px-8 pb-8"
+          className="px-7 pb-8"
         >
           <Pressable
-            onPress={() => canContinue && router.push("/(onboarding)/interests")}
-            className={`rounded-2xl py-4 items-center ${
-              canContinue ? "bg-emerald active:opacity-80" : "bg-surface-light"
-            }`}
+            onPress={() => canContinue && router.push("/(onboarding)/journey")}
             disabled={!canContinue}
+            className={`rounded-full py-4 items-center ${canContinue ? "bg-deep-green" : "bg-surface-light"}`}
           >
             <Text
-              className={`text-lg font-bold ${
+              className={`text-xs font-bold uppercase tracking-[2px] ${
                 canContinue ? "text-white" : "text-muted"
               }`}
             >
-              Continue
+              Continue →
             </Text>
           </Pressable>
         </Animated.View>

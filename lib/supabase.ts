@@ -17,7 +17,7 @@ const storage =
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage,
-    autoRefreshToken: true,
+    autoRefreshToken: Boolean(supabaseUrl && supabaseAnonKey),
     persistSession: true,
     detectSessionInUrl: false,
   },

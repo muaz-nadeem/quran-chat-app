@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-background: #0B1F14;
+  --color-surface: #163D2B;
+  --color-surface-light: #2D5C47;
+  --color-text-primary: #F2F7F4;
+  --color-text-secondary: #9BB8A8;
+  --color-text-on-green: #FFFFFF;
+  --color-text-on-green-muted: rgba(255, 255, 255, 0.72);
+  --color-muted: #6B8F7A;
+  --color-primary: #74C69D;
+  --color-primary-soft: #95D5B2;
+  --color-primary-dark: #1F5038;
+  --color-accent-cream: #1F4D38;
+  --color-emerald-soft: rgba(255, 255, 255, 0.08);
+  --color-surface-tint: rgba(255, 255, 255, 0.06);
+  --color-gold: #D4AF37;
+  --color-gold-soft: rgba(212, 175, 55, 0.18);
+  --color-danger: #E07A7A;
+  --color-hero-start: #081810;
+  --color-hero-end: #122A1E;
+  --color-pattern: #D4AF37;
+  --color-pattern-opacity: 0.1;
+  --color-card-shadow: rgba(0, 0, 0, 0.35);
+}
+
+.dark {
+  --color-background: #060F0A;
+  --color-surface: #122A1E;
+  --color-surface-light: #243D30;
+  --color-text-primary: #F2F7F4;
+  --color-text-secondary: #9BB8A8;
+  --color-text-on-green: #F2F7F4;
+  --color-text-on-green-muted: rgba(242, 242, 242, 0.65);
+  --color-muted: #6B8F7A;
+  --color-primary: #74C69D;
+  --color-primary-soft: #95D5B2;
+  --color-primary-dark: #2D6A4F;
+  --color-accent-cream: #1A3D2E;
+  --color-emerald-soft: rgba(255, 255, 255, 0.06);
+  --color-surface-tint: rgba(255, 255, 255, 0.05);
+  --color-gold: #D4A84B;
+  --color-gold-soft: rgba(212, 168, 75, 0.15);
+  --color-danger: #E07A7A;
+  --color-hero-start: #040A07;
+  --color-hero-end: #0F2918;
+  --color-pattern: #D4A84B;
+  --color-pattern-opacity: 0.08;
+  --color-card-shadow: rgba(0, 0, 0, 0.45);
+}

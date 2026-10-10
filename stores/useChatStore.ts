@@ -98,11 +98,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set({ conversations: updatedConversations, isStreaming: true, streamingContent: "" });
 
     try {
+      const { goal, interests } = useAuthStore.getState();
       const fullResponse = await sendChatMessage(
         updatedMessages,
         (chunk) => {
           set({ streamingContent: chunk });
-        }
+        },
+        { goal, interests }
       );
 
       const assistantMessage: ChatMessage = {

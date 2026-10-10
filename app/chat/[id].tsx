@@ -1,6 +1,7 @@
 import ChatBubble from "@/components/ChatBubble";
 import { SUGGESTED_QUESTIONS } from "@/constants/suggested-questions";
 import { useChatStore } from "@/stores/useChatStore";
+import { THEME_COLORS, useThemeStore } from "@/stores/useThemeStore";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -44,12 +45,28 @@ function SendIcon({ color, size }: { color: string; size: number }) {
   );
 }
 
+function BookIcon({ color, size = 18 }: { color: string; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2V3ZM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7V3Z"
+        stroke={color}
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 export default function ChatScreen() {
   const { id, initialMessage } = useLocalSearchParams<{
     id: string;
     initialMessage?: string;
   }>();
   const router = useRouter();
+  const mode = useThemeStore((s) => s.mode);
+  const colors = THEME_COLORS[mode];
   const [input, setInput] = useState("");
   const flatListRef = useRef<FlatList>(null);
   const initialSent = useRef(false);
@@ -91,19 +108,31 @@ export default function ChatScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 border-b border-surface-light">
+      <View
+        className="flex-row items-center px-4 py-3 border-b"
+        style={{
+          borderColor: colors.emeraldSoft,
+          backgroundColor: colors.background,
+        }}
+      >
         <Pressable
           onPress={() => router.back()}
-          className="w-10 h-10 items-center justify-center rounded-full active:opacity-50"
+          className="w-9 h-9 items-center justify-center rounded-full active:opacity-50"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.surfaceLight,
+          }}
         >
-          <ArrowLeft color="#1B211D" size={22} />
+          <ArrowLeft color={colors.textSecondary} size={18} />
         </Pressable>
 
-        <View className="flex-1 ml-2">
+        <View className="flex-1 mx-3">
           <Text
-            className="text-text-primary font-bold text-base"
+            className="font-bold text-[16px]"
+            style={{ color: colors.textOnGreen }}
             numberOfLines={1}
           >
             {conversation?.title ?? "New Chat"}
@@ -112,9 +141,13 @@ export default function ChatScreen() {
 
         <Pressable
           onPress={() => toggleBookmark(id)}
-          className="w-10 h-10 items-center justify-center rounded-full active:opacity-50"
+          className="w-9 h-9 items-center justify-center rounded-full active:opacity-50"
         >
-          <Text className="text-lg">
+          <Text
+            className={`text-base ${
+              conversation?.isBookmarked ? "text-gold" : "text-muted"
+            }`}
+          >
             {conversation?.isBookmarked ? "★" : "☆"}
           </Text>
         </Pressable>
@@ -125,18 +158,30 @@ export default function ChatScreen() {
         className="flex-1"
         keyboardVerticalOffset={0}
       >
-        {/* Messages */}
+        {/* Messages or suggestions */}
         {showSuggestions ? (
-          <View className="flex-1 justify-center px-4">
+          <View className="flex-1 justify-center px-5">
             <View className="items-center mb-8">
-              <View className="w-20 h-20 rounded-full bg-emerald/15 items-center justify-center mb-4">
-                <Text className="text-4xl">📖</Text>
+              <View
+                className="w-16 h-16 rounded-full items-center justify-center mb-4"
+                style={{ backgroundColor: colors.surfaceTint }}
+              >
+                <BookIcon color={colors.emerald} size={28} />
               </View>
-              <Text className="text-text-primary text-xl font-bold text-center mb-2">
+              <Text
+                className="text-xl font-bold text-center mb-2"
+                style={{
+                  fontFamily: "LibreBaskerville_700Bold",
+                  color: colors.textOnGreen,
+                }}
+              >
                 Ask anything about the Quran
               </Text>
-              <Text className="text-text-secondary text-center leading-6">
-                I'll provide answers with Quranic references
+              <Text
+                className="text-sm text-center leading-5"
+                style={{ color: colors.textOnGreenMuted }}
+              >
+                Get answers with Quranic references and guidance
               </Text>
             </View>
 
@@ -147,10 +192,15 @@ export default function ChatScreen() {
                   onPress={() => {
                     setInput(q.text);
                   }}
-                  className="bg-surface border border-surface-light rounded-2xl px-4 py-3 m-1.5 active:opacity-70"
-                  style={{ maxWidth: "47%" }}
+                  className="rounded-2xl px-4 py-3 m-1.5 active:opacity-70"
+                  style={{
+                    maxWidth: "47%",
+                    backgroundColor: colors.surface,
+                    borderWidth: 1,
+                    borderColor: colors.surfaceLight,
+                  }}
                 >
-                  <Text className="text-text-primary text-sm leading-5">
+                  <Text className="text-sm leading-5" style={{ color: colors.textPrimary }}>
                     {q.icon} {q.text}
                   </Text>
                 </Pressable>
@@ -170,7 +220,7 @@ export default function ChatScreen() {
             )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{
-              paddingTop: 16,
+              paddingTop: 20,
               paddingBottom: 16,
             }}
             showsVerticalScrollIndicator={false}
@@ -180,47 +230,73 @@ export default function ChatScreen() {
           />
         )}
 
-        {/* Loading indicator */}
+        {/* Streaming loading indicator */}
         {isStreaming && !streamingContent && (
-          <View className="px-4 pb-2">
-            <View className="flex-row items-center">
-              <View className="w-7 h-7 rounded-full bg-emerald/20 items-center justify-center mr-2">
-                <Text className="text-xs">📖</Text>
-              </View>
-              <ActivityIndicator color="#10B981" size="small" />
-              <Text className="text-text-secondary text-sm ml-2">
-                Thinking...
+          <View className="px-5 pb-3">
+            <View
+              className="flex-row items-center rounded-2xl px-4 py-3 self-start"
+              style={{
+                backgroundColor: colors.surface,
+                borderWidth: 1,
+                borderColor: colors.surfaceLight,
+              }}
+            >
+              <ActivityIndicator color={colors.emerald} size="small" />
+              <Text
+                className="text-sm ml-2.5 font-medium"
+                style={{ color: colors.textSecondary }}
+              >
+                Thinking…
               </Text>
             </View>
           </View>
         )}
 
-        {/* Input */}
-        <View className="px-4 pb-4 pt-2 border-t border-surface-light">
-          <View className="flex-row items-end bg-surface border border-surface-light rounded-2xl px-4 py-2">
+        {/* Input area */}
+        <View
+          className="px-4 pb-4 pt-2 border-t"
+          style={{
+            borderColor: colors.emeraldSoft,
+            backgroundColor: colors.background,
+          }}
+        >
+          <View
+            className="flex-row items-end rounded-[20px] pl-4 pr-1.5 py-1.5"
+            style={{
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.surfaceLight,
+            }}
+          >
             <TextInput
               value={input}
               onChangeText={setInput}
               placeholder="Ask about the Quran..."
-              placeholderTextColor="#98A29A"
+              placeholderTextColor={colors.muted}
               multiline
               maxLength={1000}
-              className="flex-1 text-text-primary text-base py-2 max-h-24"
-              selectionColor="#10B981"
+              className="flex-1 text-[15px] py-2 max-h-24"
+              style={{ color: colors.textPrimary }}
+              selectionColor={colors.emerald}
               editable={!isStreaming}
               onSubmitEditing={handleSend}
             />
             <Pressable
               onPress={handleSend}
               disabled={!input.trim() || isStreaming}
-              className={`w-10 h-10 rounded-full items-center justify-center ml-2 ${input.trim() && !isStreaming
-                  ? "bg-emerald active:opacity-70"
-                  : "bg-surface-light"
-                }`}
+              className={`w-9 h-9 rounded-full items-center justify-center ml-2 mb-0.5 ${
+                input.trim() && !isStreaming
+                  ? "active:opacity-70"
+                  : ""
+              }`}
+              style={{
+                backgroundColor:
+                  input.trim() && !isStreaming ? colors.emeraldDark : "transparent",
+              }}
             >
               <SendIcon
-                color={input.trim() && !isStreaming ? "#FFFFFF" : "#98A29A"}
-                size={18}
+                color={input.trim() && !isStreaming ? colors.white : colors.muted}
+                size={16}
               />
             </Pressable>
           </View>

@@ -5,9 +5,15 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface UserContext {
+  goal?: string | null;
+  interests?: string[];
+}
+
 export async function sendChatMessage(
   messages: ChatMessage[],
-  onChunk: (chunk: string) => void
+  onChunk: (chunk: string) => void,
+  userContext?: UserContext
 ): Promise<string> {
   const session = await supabase.auth.getSession();
   const token =
@@ -25,7 +31,7 @@ export async function sendChatMessage(
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify({ messages, userContext }),
     }
   );
 

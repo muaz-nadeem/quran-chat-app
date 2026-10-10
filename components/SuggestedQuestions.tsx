@@ -1,14 +1,21 @@
 import { View, Text, Pressable } from "react-native";
 import { SUGGESTED_QUESTIONS } from "@/constants/suggested-questions";
+import { THEME_COLORS, useThemeStore } from "@/stores/useThemeStore";
 
 interface Props {
   onSelectQuestion: (question: string) => void;
 }
 
 export default function SuggestedQuestions({ onSelectQuestion }: Props) {
+  const mode = useThemeStore((s) => s.mode);
+  const colors = THEME_COLORS[mode];
+
   return (
     <View className="mb-6">
-      <Text className="text-text-primary font-bold text-lg px-6 mb-4">
+      <Text
+        className="font-bold text-lg px-6 mb-4"
+        style={{ color: colors.textOnGreen }}
+      >
         Ask the Quran
       </Text>
       <View className="flex-row flex-wrap px-[18px]">

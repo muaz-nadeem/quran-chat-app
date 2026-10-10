@@ -28,7 +28,7 @@ export default function VerseCard({ surah, ayah }: Props) {
 
   if (loading) {
     return (
-      <View className="bg-background rounded-2xl p-4 my-2 border border-surface-light">
+      <View className="bg-surface-tint rounded-2xl p-4 my-2 border border-surface-light">
         <ActivityIndicator color="#A97E3F" size="small" />
       </View>
     );
@@ -36,7 +36,7 @@ export default function VerseCard({ surah, ayah }: Props) {
 
   if (!verse) {
     return (
-      <View className="bg-background rounded-2xl p-4 my-2 border border-surface-light">
+      <View className="bg-surface-tint rounded-2xl p-4 my-2 border border-surface-light">
         <Text className="text-gold text-xs font-semibold mb-1">
           📖 Quran {surah}:{ayah}
         </Text>
@@ -48,7 +48,7 @@ export default function VerseCard({ surah, ayah }: Props) {
   }
 
   return (
-    <View className="bg-background rounded-2xl p-4 my-2 border border-surface-light">
+    <View className="bg-surface-tint rounded-2xl p-4 my-2 border border-surface-light">
       <View className="flex-row items-center mb-3">
         <Text className="text-gold text-xs font-bold uppercase tracking-wider">
           📖 {verse.surahEnglishName}

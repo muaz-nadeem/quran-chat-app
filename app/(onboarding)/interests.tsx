@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -9,9 +9,7 @@ import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 export default function InterestsScreen() {
   const router = useRouter();
   const [selected, setSelected] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const setInterests = useAuthStore((s) => s.setInterests);
-  const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
 
   const toggleTopic = (id: string) => {
     setSelected((prev) =>
@@ -19,34 +17,47 @@ export default function InterestsScreen() {
     );
   };
 
-  const handleComplete = async () => {
-    setIsLoading(true);
+  const handleComplete = () => {
     setInterests(selected);
-    try {
-      await completeOnboarding();
-      router.replace("/(tabs)");
-    } catch {
-      setIsLoading(false);
-    }
+    router.push("/(onboarding)/notifications");
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1">
-        <Animated.View
-          entering={FadeInUp.duration(600).delay(200)}
-          className="px-8 pt-4 pb-6"
-        >
-          <Text className="text-3xl font-bold text-text-primary mb-3">
-            What interests you? ✨
+        <Animated.View entering={FadeInUp.duration(500).delay(100)} className="px-7 pt-4">
+          <View className="flex-row items-center justify-between mb-2">
+            <Text
+              className="text-gold text-base"
+              style={{ fontFamily: "LibreBaskerville_700Bold" }}
+            >
+              Quran Chat
+            </Text>
+            <Pressable onPress={() => router.push("/(onboarding)/ready")}>
+              <Text className="text-text-on-green-muted text-xs font-semibold uppercase tracking-wider">
+                Skip
+              </Text>
+            </Pressable>
+          </View>
+          <View className="h-1 bg-surface-light rounded-full mb-2 overflow-hidden">
+            <View className="h-full w-4/5 bg-gold rounded-full" />
+          </View>
+          <Text className="text-text-on-green-muted text-xs font-semibold uppercase tracking-wider mb-5">
+            Step 4 of 5
           </Text>
-          <Text className="text-base text-text-secondary leading-6">
-            Pick topics you'd like to explore in the Quran. You can always change these later.
+          <Text
+            className="text-[26px] text-text-on-green tracking-tight mb-3"
+            style={{ fontFamily: "LibreBaskerville_700Bold" }}
+          >
+            What interests you?
+          </Text>
+          <Text className="text-[15px] text-text-on-green-muted leading-6 mb-6">
+            Pick topics you'd like to explore in the Quran.
           </Text>
         </Animated.View>
 
         <ScrollView
-          className="flex-1 px-6"
+          className="flex-1 px-5"
           contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >
@@ -57,20 +68,22 @@ export default function InterestsScreen() {
                 <Animated.View
                   key={topic.id}
                   entering={FadeInDown.duration(400).delay(200 + index * 60)}
-                  className="w-1/2 p-1.5"
+                  style={{ width: "50%", padding: 6 }}
                 >
                   <Pressable
                     onPress={() => toggleTopic(topic.id)}
-                    className={`rounded-2xl p-4 border-2 ${
+                    className={`rounded-2xl p-4 border ${
                       isSelected
-                        ? "bg-emerald/15 border-emerald"
+                        ? "bg-gold-soft border-gold"
                         : "bg-surface border-surface-light"
                     }`}
                   >
-                    <Text className="text-2xl mb-2">{topic.icon}</Text>
+                    <View className="w-10 h-10 rounded-xl bg-cream items-center justify-center mb-3">
+                      <Text className="text-xl">{topic.icon}</Text>
+                    </View>
                     <Text
                       className={`text-sm font-semibold ${
-                        isSelected ? "text-emerald-light" : "text-text-primary"
+                        isSelected ? "text-gold" : "text-text-primary"
                       }`}
                     >
                       {topic.label}
@@ -85,22 +98,17 @@ export default function InterestsScreen() {
 
       <Animated.View
         entering={FadeInDown.duration(600).delay(800)}
-        className="px-8 pb-8 pt-4"
+        className="px-7 pb-8 pt-4"
       >
         <Pressable
           onPress={handleComplete}
-          disabled={isLoading}
-          className="bg-emerald rounded-2xl py-4 items-center active:opacity-80"
+          className="rounded-full py-4 items-center active:opacity-80 bg-deep-green"
         >
-          {isLoading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-white text-lg font-bold">
-              {selected.length > 0
-                ? `Continue (${selected.length} selected)`
-                : "Skip for now"}
-            </Text>
-          )}
+          <Text className="text-white text-xs font-bold uppercase tracking-[2px]">
+            {selected.length > 0
+              ? `Continue (${selected.length}) →`
+              : "Skip for now →"}
+          </Text>
         </Pressable>
       </Animated.View>
     </SafeAreaView>

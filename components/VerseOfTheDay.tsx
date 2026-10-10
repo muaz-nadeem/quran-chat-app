@@ -1,9 +1,14 @@
 import { getRandomVerse, VerseWithTranslation } from "@/lib/quran-api";
+import { THEME_COLORS, useThemeStore } from "@/stores/useThemeStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 export default function VerseOfTheDay() {
+  const router = useRouter();
+  const themeMode = useThemeStore((s) => s.mode);
+  const colors = THEME_COLORS[themeMode];
   const [verse, setVerse] = useState<VerseWithTranslation | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,11 +45,26 @@ export default function VerseOfTheDay() {
     }
   }
 
+  const cardStyle = {
+    backgroundColor: colors.surface,
+    borderColor: colors.gold,
+    borderWidth: 1,
+    borderTopWidth: 3,
+    borderTopColor: colors.gold,
+    borderRadius: 22,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 14,
+    elevation: 5,
+  };
+
   if (loading) {
     return (
-      <View className="bg-surface rounded-3xl p-6 mx-6 mb-6">
-        <View className="items-center py-8">
-          <ActivityIndicator color="#10B981" />
+      <View className="mx-6 mb-5" style={cardStyle}>
+        <View className="items-center py-6">
+          <ActivityIndicator color={colors.gold} />
         </View>
       </View>
     );
@@ -53,35 +73,51 @@ export default function VerseOfTheDay() {
   if (!verse) return null;
 
   return (
-    <View className="mx-6 mb-6">
-      <View className="bg-surface rounded-3xl p-6 border border-surface-light overflow-hidden">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center">
-            <Text className="text-lg mr-2">🌙</Text>
-            <Text className="text-emerald font-bold text-sm uppercase tracking-wider">
-              Verse of the Day
-            </Text>
-          </View>
-          <View className="bg-emerald/10 rounded-full px-3 py-1">
-            <Text className="text-emerald-light text-xs font-semibold">
-              {verse.surahEnglishName} {verse.surahNumber}:{verse.ayahNumber}
-            </Text>
-          </View>
-        </View>
+    <View className="mx-6 mb-5" style={cardStyle}>
+      <Text
+        className="text-xs font-bold uppercase tracking-[2px] text-center mb-5"
+        style={{ color: colors.gold }}
+      >
+        Verse of the Day
+      </Text>
 
-        <Text
-          className="text-text-primary text-2xl text-right leading-[48px] mb-4"
-          style={{ fontFamily: "System" }}
-        >
-          {verse.arabic}
+      <Text
+        className="text-[22px] text-center leading-[48px] mb-4"
+        style={{ fontFamily: "Amiri_400Regular", color: colors.emerald }}
+      >
+        {verse.arabic}
+      </Text>
+
+      <Text
+        className="text-[15px] leading-6 text-center mb-3"
+        style={{ color: colors.textSecondary }}
+      >
+        {verse.translation}
+      </Text>
+
+      <Text
+        className="text-sm text-center mb-5"
+        style={{
+          fontFamily: "LibreBaskerville_700Bold",
+          color: colors.textPrimary,
+        }}
+      >
+        Surah {verse.surahEnglishName} {verse.surahNumber}:{verse.ayahNumber}
+      </Text>
+
+      <Pressable
+        onPress={() => {
+          const n = Number(verse.surahNumber);
+          if (!Number.isFinite(n) || n < 1 || n > 114) return;
+          router.push(`/quran/${n}`);
+        }}
+        className="rounded-full py-3.5 items-center active:opacity-80"
+        style={{ backgroundColor: colors.emeraldDark }}
+      >
+        <Text className="text-white text-xs font-bold uppercase tracking-[1.5px]">
+          Reflect
         </Text>
-
-        <View className="h-px bg-emerald/10 mb-4" />
-
-        <Text className="text-text-secondary text-base leading-7 italic">
-          "{verse.translation}"
-        </Text>
-      </View>
+      </Pressable>
     </View>
   );
 }
